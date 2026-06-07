@@ -1,6 +1,12 @@
+import { Link } from 'react-router-dom'
+
 export default function Footer() {
   return (
     <footer className="site-footer">
+      <div className="footer-nav">
+        <Link to="/">Acasa</Link>
+        <Link to="/anunturi">Anunturi</Link>
+      </div>
       <div className="footer-inner">
         <span>COPYRIGHT © 2022- Design for PiatadeTroc.ro</span>
         <div className="social-links">

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { locations } from '../data/siteData'
 
 export default function Locations() {
@@ -5,13 +6,13 @@ export default function Locations() {
     <section className="locations-section">
       <div className="section-header">
         <h2>Alege localitatea</h2>
-        <p>Vezi cine face troc in apropriere de tine</p>
+        <p>Vezi anunturi din apropierea ta</p>
       </div>
       <div className="locations-grid">
         {locations.map((name) => (
-          <a
+          <Link
             key={name}
-            href={`#loc-${name.toLowerCase().replace(/\s+/g, '-')}`}
+            to={`/anunturi?location=${encodeURIComponent(name)}`}
             className="location-card"
           >
             <span className="location-icon" aria-hidden="true">
@@ -20,7 +21,7 @@ export default function Locations() {
               </svg>
             </span>
             <span className="location-name">{name}</span>
-          </a>
+          </Link>
         ))}
       </div>
     </section>

@@ -4,6 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "fetch-data": "python scripts/fetch-all.py",
+    "fix-images": "python scripts/fix-images.py",
+    "prebuild": "npm run fetch-data",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
@@ -11,7 +14,8 @@
   },
   "dependencies": {
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "react-router-dom": "^7.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

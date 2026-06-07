@@ -1,9 +1,10 @@
 import SearchBar from './SearchBar'
 import Categories from './Categories'
+import { siteAssets } from '../data/siteData'
 
 export default function Hero({ searchQuery, onSearchChange, selectedCategory, onCategorySelect }) {
   return (
-    <section id="acasa" className="hero">
+    <section id="acasa" className="hero" style={{ backgroundImage: `url(${siteAssets.banner})` }}>
       <div className="hero-overlay" />
       <div className="hero-content">
         <h1>Piata de troc</h1>

@@ -1,16 +1,29 @@
+import { useNavigate } from 'react-router-dom'
 import { categories, asset } from '../data/siteData'
+import { useListings } from '../context/ListingsContext'
 
 export default function Categories({ selectedCategory, onCategorySelect }) {
+  const navigate = useNavigate()
+  const { categories: dynamicCategories } = useListings()
+
+  const items = categories.map((cat) => ({
+    ...cat,
+    count: dynamicCategories.find((c) => c.name === cat.name)?.count ?? cat.count,
+  }))
+
   return (
     <div className="categories">
-      {categories.map((cat) => (
+      {items.map((cat) => (
         <button
           key={cat.slug}
           type="button"
           className={`category-card ${selectedCategory === cat.name ? 'selected' : ''}`}
           onClick={() => {
-            onCategorySelect(selectedCategory === cat.name ? '' : cat.name)
-            document.getElementById('anunturi')?.scrollIntoView({ behavior: 'smooth' })
+            const next = selectedCategory === cat.name ? '' : cat.name
+            onCategorySelect(next)
+            if (next) {
+              navigate(`/anunturi?category=${encodeURIComponent(next)}`)
+            }
           }}
         >
           <span className="category-icon">

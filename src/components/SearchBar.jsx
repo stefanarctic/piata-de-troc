@@ -1,12 +1,18 @@
+import { useNavigate } from 'react-router-dom'
 import { categories } from '../data/siteData'
 
 export default function SearchBar({ value, onChange, selectedCategory, onCategorySelect }) {
+  const navigate = useNavigate()
+
   return (
     <form
       className="search-bar"
       onSubmit={(e) => {
         e.preventDefault()
-        document.getElementById('anunturi')?.scrollIntoView({ behavior: 'smooth' })
+        const params = new URLSearchParams()
+        if (value.trim()) params.set('q', value.trim())
+        if (selectedCategory) params.set('category', selectedCategory)
+        navigate(`/anunturi?${params.toString()}`)
       }}
     >
       <select

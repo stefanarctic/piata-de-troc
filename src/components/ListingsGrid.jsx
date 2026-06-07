@@ -1,9 +1,18 @@
 import { useMemo, useState } from 'react'
-import { asset } from '../data/siteData'
+import { useNavigate } from 'react-router-dom'
+import ListingCard from './ListingCard'
 
 const PAGE_SIZE = 8
 
-export default function ListingsGrid({ listings, searchQuery, selectedCategory }) {
+export default function ListingsGrid({
+  listings,
+  loading,
+  searchQuery,
+  selectedCategory,
+  title = 'Ultimele anunturi',
+  subtitle = 'Vrei sa faci troc? Alege anuntul care ti se potriveste.',
+}) {
+  const navigate = useNavigate()
   const [favourites, setFavourites] = useState(new Set())
   const filterKey = `${searchQuery}|${selectedCategory}`
 
@@ -19,33 +28,45 @@ export default function ListingsGrid({ listings, searchQuery, selectedCategory }
     })
   }, [listings, searchQuery, selectedCategory])
 
-  const toggleFavourite = (id) => {
+  const toggleFavourite = (slug) => {
     setFavourites((prev) => {
       const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
+      if (next.has(slug)) next.delete(slug)
+      else next.add(slug)
       return next
     })
+  }
+
+  const handleSearchNavigate = () => {
+    const params = new URLSearchParams()
+    if (searchQuery.trim()) params.set('q', searchQuery.trim())
+    if (selectedCategory) params.set('category', selectedCategory)
+    navigate(`/anunturi?${params.toString()}`)
   }
 
   return (
     <section id="anunturi" className="listings-section">
       <div className="section-header">
-        <h2>Ultimele anunturi</h2>
-        <p>Vrei sa faci troc? Alege anuntul care ti se potriveste.</p>
+        <h2>{title}</h2>
+        <p>{subtitle}</p>
       </div>
 
-      <ListingsContent
-        key={filterKey}
-        filtered={filtered}
-        favourites={favourites}
-        toggleFavourite={toggleFavourite}
-      />
+      {loading ? (
+        <p className="loading-msg">Se incarca anunturile...</p>
+      ) : (
+        <ListingsContent
+          key={filterKey}
+          filtered={filtered}
+          favourites={favourites}
+          toggleFavourite={toggleFavourite}
+          onViewAll={handleSearchNavigate}
+        />
+      )}
     </section>
   )
 }
 
-function ListingsContent({ filtered, favourites, toggleFavourite }) {
+function ListingsContent({ filtered, favourites, toggleFavourite, onViewAll }) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const visible = filtered.slice(0, visibleCount)
   const hasMore = visibleCount < filtered.length
@@ -58,39 +79,26 @@ function ListingsContent({ filtered, favourites, toggleFavourite }) {
     <>
       <div className="listings-grid">
         {visible.map((listing) => (
-          <article key={listing.id} className="listing-card">
-            <figure>
-              <a href={`#listing-${listing.id}`} className="listing-thumb">
-                <img src={asset(listing.image)} alt={listing.title} loading="lazy" />
-              </a>
-              <button
-                type="button"
-                className={`fav-btn ${favourites.has(listing.id) ? 'active' : ''}`}
-                aria-label="Adauga la favorite"
-                onClick={() => toggleFavourite(listing.id)}
-              >
-                ♥
-              </button>
-            </figure>
-            <div className="listing-body">
-              <h3>
-                <a href={`#listing-${listing.id}`}>{listing.title}</a>
-              </h3>
-              {listing.category && (
-                <span className="listing-cat">{listing.category}</span>
-              )}
-            </div>
-          </article>
+          <ListingCard
+            key={listing.slug}
+            listing={listing}
+            favourites={favourites}
+            onToggleFav={toggleFavourite}
+          />
         ))}
       </div>
 
-      {hasMore && (
+      {hasMore ? (
         <button
           type="button"
           className="btn btn-primary load-more"
           onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
         >
           Load More
+        </button>
+      ) : (
+        <button type="button" className="btn btn-primary load-more" onClick={onViewAll}>
+          Vezi toate anunturile
         </button>
       )}
     </>
