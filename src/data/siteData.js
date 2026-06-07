@@ -6,20 +6,20 @@ export const menus = [
 ]
 
 export const categories = [
-  { name: 'Servicii', count: 7, icon: `${UPLOADS}/2022/11/servicii-icon.png`, slug: 'servicii' },
-  { name: 'Antichitati', count: 2, icon: `${UPLOADS}/2022/11/antichitati-icon.png`, slug: 'antichitati' },
-  { name: 'Imobiliare', count: 6, icon: `${UPLOADS}/2022/11/house.png`, slug: 'imobiliare' },
-  { name: 'Sport', count: 15, icon: `${UPLOADS}/2022/11/sport-icon.png`, slug: 'sport' },
-  { name: 'Masini', count: 21, icon: `${UPLOADS}/2022/11/car.png`, slug: 'masini' },
-  { name: 'Telefoane mobile', count: 4, icon: `${UPLOADS}/2022/11/mobile.png`, slug: 'telefoane-mobile' },
-  { name: 'Mobilier', count: 8, icon: `${UPLOADS}/2022/11/furniture.png`, slug: 'mobilier' },
-  { name: 'Electronice', count: 37, icon: `${UPLOADS}/2022/11/eelectronics.png`, slug: 'electronice' },
-  { name: 'Electrocasnice', count: 11, icon: `${UPLOADS}/2022/11/Customer-support.png`, slug: 'electrocasnice' },
-  { name: 'Fashion', count: 13, icon: `${UPLOADS}/2022/11/Fashion0.png`, slug: 'fashion' },
-  { name: 'Animale', count: 9, icon: `${UPLOADS}/2022/11/pet.png`, slug: 'animale' },
-  { name: 'Carti', count: 1, icon: `${UPLOADS}/2022/11/education.png`, slug: 'carti' },
-  { name: 'Jucarii', count: 7, icon: `${UPLOADS}/2022/11/Baby-Toys.png`, slug: 'jucarii' },
-  { name: 'Cereale', count: 1, icon: `${UPLOADS}/2022/11/cereale.png`, slug: 'cereale' },
+  { name: 'Servicii', count: 7, icon: '/icons/categories/servicii.svg', slug: 'servicii' },
+  { name: 'Antichitati', count: 2, icon: '/icons/categories/antichitati.svg', slug: 'antichitati' },
+  { name: 'Imobiliare', count: 6, icon: '/icons/categories/imobiliare.svg', slug: 'imobiliare' },
+  { name: 'Sport', count: 15, icon: '/icons/categories/sport.svg', slug: 'sport' },
+  { name: 'Masini', count: 21, icon: '/icons/categories/masini.svg', slug: 'masini' },
+  { name: 'Telefoane mobile', count: 4, icon: '/icons/categories/telefoane-mobile.svg', slug: 'telefoane-mobile' },
+  { name: 'Mobilier', count: 8, icon: '/icons/categories/mobilier.svg', slug: 'mobilier' },
+  { name: 'Electronice', count: 37, icon: '/icons/categories/electronice.svg', slug: 'electronice' },
+  { name: 'Electrocasnice', count: 11, icon: '/icons/categories/electrocasnice.svg', slug: 'electrocasnice' },
+  { name: 'Fashion', count: 13, icon: '/icons/categories/fashion.svg', slug: 'fashion' },
+  { name: 'Animale', count: 9, icon: '/icons/categories/animale.svg', slug: 'animale' },
+  { name: 'Carti', count: 1, icon: '/icons/categories/carti.svg', slug: 'carti' },
+  { name: 'Jucarii', count: 7, icon: '/icons/categories/jucarii.svg', slug: 'jucarii' },
+  { name: 'Cereale', count: 1, icon: '/icons/categories/cereale.svg', slug: 'cereale' },
 ]
 
 export const locations = [
@@ -32,7 +32,7 @@ export const locations = [
 ]
 
 export const asset = (filename) => {
-  if (filename.startsWith('http')) return filename
+  if (filename.startsWith('http') || filename.startsWith('/')) return filename
   return `${UPLOADS}/2022/11/${filename}`
 }
 
