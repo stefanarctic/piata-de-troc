@@ -1,12 +1,15 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { fetchAllListings } from '../services/listingsApi'
+import { fetchAllListings, fetchLatestListings } from '../services/listingsApi'
 
 const ListingsContext = createContext(null)
 
 export function ListingsProvider({ children }) {
   const [listings, setListings] = useState([])
+  const [latestListings, setLatestListings] = useState([])
   const [loading, setLoading] = useState(true)
+  const [latestLoading, setLatestLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [latestError, setLatestError] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -28,6 +31,26 @@ export function ListingsProvider({ children }) {
     }
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+    fetchLatestListings()
+      .then((data) => {
+        if (!cancelled) {
+          setLatestListings(data)
+          setLatestLoading(false)
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setLatestError(err.message)
+          setLatestLoading(false)
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   const categories = useMemo(() => {
     const counts = {}
     listings.forEach((item) => {
@@ -39,7 +62,17 @@ export function ListingsProvider({ children }) {
   }, [listings])
 
   return (
-    <ListingsContext.Provider value={{ listings, loading, error, categories }}>
+    <ListingsContext.Provider
+      value={{
+        listings,
+        latestListings,
+        loading,
+        latestLoading,
+        error,
+        latestError,
+        categories,
+      }}
+    >
       {children}
     </ListingsContext.Provider>
   )

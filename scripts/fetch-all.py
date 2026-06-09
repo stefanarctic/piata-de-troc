@@ -21,6 +21,21 @@ def strip_html(text):
     return html_lib.unescape(re.sub(r"\s+", " ", text).strip())
 
 
+def strip_non_content(html):
+    html = re.sub(r"<style[^>]*>.*?</style>", "", html or "", flags=re.I | re.S)
+    html = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.I | re.S)
+    return html
+
+
+def sanitize_label(value):
+    value = (value or "").strip()
+    if not value or len(value) > 80:
+        return ""
+    if re.search(r"[{}]|!important|directorypress-|sourceURL|\.single-listing", value, re.I):
+        return ""
+    return html_lib.unescape(value)
+
+
 def get_sitemap_slugs():
     xml = fetch(f"{BASE}/wp-sitemap-posts-dp_listing-1.xml")
     return re.findall(r"listings/([^/]+)/", xml)
@@ -39,8 +54,8 @@ def parse_listing_card(html):
         img_m = re.search(r'data-lazy="(https://piatadetroc\.ro/[^"]+)"', art)
         if not img_m:
             img_m = re.search(r'src="(https://piatadetroc\.ro/[^"]+)"', art)
-        cat_m = re.search(r'class="listing-cat"[^>]*>([^<]+)', art)
-        loc_m = re.search(r'class="listing-location"[^>]*>([^<]+)', art)
+        cat_m = re.search(r'<[^>]+class="listing-cat"[^>]*>([^<]+)', art)
+        loc_m = re.search(r'<[^>]+class="listing-location"[^>]*>([^<]+)', art)
         if not link_m:
             continue
         slug = link_m.group(2)
@@ -49,15 +64,17 @@ def parse_listing_card(html):
             "title": html_lib.unescape(title_m.group(1) if title_m else slug),
             "url": link_m.group(1),
             "image": img_m.group(1) if img_m else "",
-            "category": html_lib.unescape(cat_m.group(1).strip()) if cat_m else "",
-            "location": html_lib.unescape(loc_m.group(1).strip()) if loc_m else "",
+            "category": sanitize_label(cat_m.group(1)) if cat_m else "",
+            "location": sanitize_label(loc_m.group(1)) if loc_m else "",
         })
     return listings
 
 
 def parse_listing_detail(html, slug):
+    content_html = strip_non_content(html)
+
     def first(pat, source=None, group=1, flags=re.I | re.S):
-        m = re.search(pat, source or html, flags)
+        m = re.search(pat, source or content_html, flags)
         if not m:
             return ""
         val = m.group(group)
@@ -101,18 +118,27 @@ def parse_listing_detail(html, slug):
         date = first(r'class="directorypress-listing-date"[^>]*>\s*([^<]+)', metas)
         views = first(r'class="listing-views"[^>]*>.*?(\d+)', metas, group=1)
 
-    phone = first(
-        r'directorypress-field-type-phone.*?field-content[^>]*>([^<]+)',
-    ) or first(r'Telefon:.*?field-content[^>]*>([^<]+)')
+    phone = sanitize_label(
+        first(
+            r'class="[^"]*directorypress-field-type-phone[^"]*"[^>]*>.*?class="field-content"[^>]*>([^<]+)',
+        )
+        or first(r'Telefon:.*?class="field-content"[^>]*>([^<]+)'),
+    )
 
     email = first(r'itemprop="email" content="([^"]+)"')
-    address = first(
-        r'directorypress-field-type-address.*?field-content[^>]*>([^<]+)',
-    ) or first(r'Adresa:.*?field-content[^>]*>([^<]+)')
+    address = sanitize_label(
+        first(
+            r'class="[^"]*directorypress-field-type-address[^"]*"[^>]*>.*?class="field-content"[^>]*>([^<]+)',
+        )
+        or first(r'Adresa:.*?class="field-content"[^>]*>([^<]+)'),
+    )
 
-    category = first(r'directorypress-field-type-categories.*?field-content[^>]*>([^<]+)')
-    if not category:
-        category = first(r'class="listing-cat"[^>]*>([^<]+)')
+    category = sanitize_label(
+        first(
+            r'class="[^"]*directorypress-field-type-categories[^"]*"[^>]*>.*?class="field-content"[^>]*>([^<]+)',
+        )
+        or first(r'<[^>]+class="listing-cat"[^>]*>([^<]+)'),
+    )
 
     author = first(r'<p class="author-name"[^>]*>([^<]+)')
     member_since = first(r'class="author-reg-date"[^>]*>([^<]+)')
@@ -121,7 +147,7 @@ def parse_listing_detail(html, slug):
         "slug": slug,
         "title": title,
         "category": category,
-        "location": address,
+        "location": address or "",
         "date": date,
         "views": views,
         "author": author,

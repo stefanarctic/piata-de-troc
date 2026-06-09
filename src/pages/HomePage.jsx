@@ -5,7 +5,7 @@ import Locations from '../components/Locations'
 import { useListings } from '../context/ListingsContext'
 
 export default function HomePage() {
-  const { listings, loading } = useListings()
+  const { latestListings, latestLoading } = useListings()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
 
@@ -18,8 +18,8 @@ export default function HomePage() {
         onCategorySelect={setSelectedCategory}
       />
       <ListingsGrid
-        listings={listings}
-        loading={loading}
+        listings={latestListings}
+        loading={latestLoading}
         searchQuery={searchQuery}
         selectedCategory={selectedCategory}
         title="Ultimele anunturi"
