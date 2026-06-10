@@ -1,12 +1,16 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { useUser } from '../context/UserContext'
 import { menus, siteAssets } from '../data/siteData'
+import { WP_LOGOUT_URL } from '../services/userApi'
 import { userAvatarProps } from '../utils/userAvatar'
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [userOpen, setUserOpen] = useState(false)
   const location = useLocation()
+  const { user } = useUser()
+  const avatar = user?.avatar || siteAssets.userAvatar
 
   return (
     <header className="site-header">
@@ -54,22 +58,20 @@ export default function Header() {
               aria-label="Cont utilizator"
               onClick={() => setUserOpen((open) => !open)}
             >
-              <img {...userAvatarProps({ avatar: siteAssets.userAvatar })} alt="" />
+              <img {...userAvatarProps({ avatar })} alt="" />
             </button>
             {userOpen && (
               <div className="user-dropdown">
-                <a href="https://piatadetroc.ro/my-dashboard/" target="_blank" rel="noreferrer">
-                  My Dashboard
-                </a>
-                <a href="https://piatadetroc.ro/my-dashboard/" target="_blank" rel="noreferrer">
-                  My Listings
-                </a>
-                <a href="https://piatadetroc.ro/my-dashboard/?directory_action=profile" target="_blank" rel="noreferrer">
-                  Edit Profile
-                </a>
-                <a href="https://piatadetroc.ro/wp-login.php?action=logout" target="_blank" rel="noreferrer">
-                  Logout
-                </a>
+                <Link to="/cont" onClick={() => setUserOpen(false)}>
+                  Panou de control
+                </Link>
+                <Link to="/cont/anunturi" onClick={() => setUserOpen(false)}>
+                  Anunturile mele
+                </Link>
+                <Link to="/cont/profil" onClick={() => setUserOpen(false)}>
+                  Editeaza profilul
+                </Link>
+                <a href={WP_LOGOUT_URL}>Deconectare</a>
               </div>
             )}
           </div>

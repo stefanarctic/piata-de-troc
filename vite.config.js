@@ -10,6 +10,7 @@ export default defineConfig({
         target: 'https://piatadetroc.ro',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/remote/, ''),
+        cookieDomainRewrite: 'localhost',
       },
     },
   },

@@ -6,6 +6,7 @@ import CategoriesWidget from '../components/CategoriesWidget'
 import ImageLightbox from '../components/ImageLightbox'
 import ListingCard from '../components/ListingCard'
 import { isValidImageUrl, listingImageProps } from '../utils/listingImage'
+import { slugifyAuthor } from '../services/userApi'
 import { userAvatarProps } from '../utils/userAvatar'
 
 export default function ListingDetailPage() {
@@ -169,9 +170,18 @@ export default function ListingDetailPage() {
             </div>
             <h3>{listing.author || 'Utilizator'}</h3>
             {listing.memberSince && <p className="member-since">{listing.memberSince}</p>}
-            <Link to="/anunturi" className="view-ads-link">
-              View All Ads
-            </Link>
+            {listing.author ? (
+              <Link
+                to={`/utilizator/${slugifyAuthor(listing.author)}`}
+                className="view-ads-link"
+              >
+                Vezi toate anunturile
+              </Link>
+            ) : (
+              <Link to="/anunturi" className="view-ads-link">
+                Vezi toate anunturile
+              </Link>
+            )}
             <div className="author-btns">
               <button type="button" className="btn btn-secondary">
                 Send Message
