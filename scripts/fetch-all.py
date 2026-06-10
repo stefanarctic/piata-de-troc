@@ -142,6 +142,9 @@ def parse_listing_detail(html, slug):
 
     author = first(r'<p class="author-name"[^>]*>([^<]+)')
     member_since = first(r'class="author-reg-date"[^>]*>([^<]+)')
+    author_avatar = first(
+        r'class="author-thumbnail"[^>]*>.*?data-src="([^"]+)"',
+    ) or first(r'class="author-thumbnail"[^>]*>.*?src="(https://[^"]+)"')
 
     return {
         "slug": slug,
@@ -151,6 +154,7 @@ def parse_listing_detail(html, slug):
         "date": date,
         "views": views,
         "author": author,
+        "authorAvatar": author_avatar,
         "memberSince": member_since,
         "phone": phone,
         "email": email,
@@ -257,6 +261,7 @@ def main():
             "date": detail.get("date", ""),
             "views": detail.get("views") or (meta.get("_total_clicks", [""])[0] if meta else ""),
             "author": detail.get("author", ""),
+            "authorAvatar": detail.get("authorAvatar", ""),
             "memberSince": detail.get("memberSince", ""),
             "phone": phone,
             "email": email,

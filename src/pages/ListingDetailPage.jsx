@@ -6,6 +6,7 @@ import CategoriesWidget from '../components/CategoriesWidget'
 import ImageLightbox from '../components/ImageLightbox'
 import ListingCard from '../components/ListingCard'
 import { isValidImageUrl, listingImageProps } from '../utils/listingImage'
+import { userAvatarProps } from '../utils/userAvatar'
 
 export default function ListingDetailPage() {
   const { slug } = useParams()
@@ -163,10 +164,7 @@ export default function ListingDetailPage() {
         <aside className="detail-sidebar">
           <div className="author-widget detail-card">
             <div className="author-avatar">
-              <img
-                src="https://piatadetroc.ro/wp-content/uploads/2024/09/38390ac22dc073779f536eb2de19d198.jpg"
-                alt=""
-              />
+              <img {...userAvatarProps(listing)} alt="" />
               <span className="offline-badge">Offline</span>
             </div>
             <h3>{listing.author || 'Utilizator'}</h3>

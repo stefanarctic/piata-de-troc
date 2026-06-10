@@ -967,6 +967,7 @@ main {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  background: #e8e8e8;
 }
 
 .offline-badge {

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { menus, siteAssets } from '../data/siteData'
+import { userAvatarProps } from '../utils/userAvatar'
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -53,7 +54,7 @@ export default function Header() {
               aria-label="Cont utilizator"
               onClick={() => setUserOpen((open) => !open)}
             >
-              <img src={siteAssets.userAvatar} alt="" />
+              <img {...userAvatarProps({ avatar: siteAssets.userAvatar })} alt="" />
             </button>
             {userOpen && (
               <div className="user-dropdown">
