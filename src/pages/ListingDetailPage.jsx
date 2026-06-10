@@ -3,13 +3,15 @@ import { Link, useParams } from 'react-router-dom'
 import { useListings } from '../context/ListingsContext'
 import { getRelatedListings } from '../services/listingsApi'
 import CategoriesWidget from '../components/CategoriesWidget'
+import ImageLightbox from '../components/ImageLightbox'
 import ListingCard from '../components/ListingCard'
-import { getListingImage, isValidImageUrl, listingImageProps } from '../utils/listingImage'
+import { isValidImageUrl, listingImageProps } from '../utils/listingImage'
 
 export default function ListingDetailPage() {
   const { slug } = useParams()
   const { listings, loading } = useListings()
   const [activeImage, setActiveImage] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
   const listing = useMemo(
     () => listings.find((item) => item.slug === slug),
@@ -29,6 +31,7 @@ export default function ListingDetailPage() {
 
   useEffect(() => {
     setActiveImage(0)
+    setLightboxOpen(false)
   }, [slug])
 
   if (loading) {
@@ -67,12 +70,17 @@ export default function ListingDetailPage() {
             </div>
 
             <div className="detail-gallery">
-              <div className="detail-gallery-main">
+              <button
+                type="button"
+                className="detail-gallery-main"
+                onClick={() => setLightboxOpen(true)}
+                aria-label="Deschide imaginea marita"
+              >
                 <img
                   {...listingImageProps({ image: images[activeImage], images })}
                   alt={listing.title}
                 />
-              </div>
+              </button>
               {images.length > 1 && (
                 <div className="detail-gallery-thumbs">
                   {images.map((img, i) => (
@@ -184,6 +192,16 @@ export default function ListingDetailPage() {
           <CategoriesWidget />
         </aside>
       </div>
+
+      {lightboxOpen && (
+        <ImageLightbox
+          images={images}
+          activeIndex={activeImage}
+          alt={listing.title}
+          onClose={() => setLightboxOpen(false)}
+          onNavigate={setActiveImage}
+        />
+      )}
     </div>
   )
 }
