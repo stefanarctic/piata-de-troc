@@ -85,12 +85,18 @@ def parse_listing_detail(html, slug):
         title = first(r'property="og:title" content="([^"]+)"')
         title = re.sub(r"\s*[-|]\s*Listings\s*$", "", title, flags=re.I).strip()
 
-    description = first(r'property="og:description" content="([^"]+)"')
+    description = ""
+    for desc_pattern in [
+        r'class="field-content directorypress-field-description"[^>]*>(.*?)</div>',
+        r'class="[^"]*directorypress-field-type-description[^"]*"[^>]*>.*?class="field-content"[^>]*>(.*?)</div>',
+        r'class="listing-content[^"]*"[^>]*>(.*?)</div>\s*</div>',
+    ]:
+        desc_block = first(desc_pattern)
+        if desc_block:
+            description = strip_html(desc_block)
+            break
     if not description:
-        desc_block = first(
-            r'class="listing-content[^"]*"[^>]*>(.*?)</div>\s*</div>',
-        )
-        description = strip_html(desc_block)
+        description = first(r'property="og:description" content="([^"]+)"')
 
     images = []
     og_image = first(r'property="og:image" content="([^"]+)"')

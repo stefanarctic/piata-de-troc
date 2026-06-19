@@ -236,13 +236,28 @@ async function fetchLiveListings() {
   })
 }
 
+async function enrichDescriptionsFromApi(listings) {
+  try {
+    const apiItems = await fetchLiveApiItems()
+    const apiByTitle = new Map(apiItems.map((item) => [item.title.toLowerCase(), item]))
+    return listings.map((listing) => {
+      const api = apiByTitle.get(listing.title.toLowerCase())
+      const apiDescription = api?.content ? stripHtml(api.content) : ''
+      if (!apiDescription) return listing
+      return { ...listing, description: apiDescription }
+    })
+  } catch {
+    return listings
+  }
+}
+
 export async function fetchAllListings({ force = false } = {}) {
   if (!force && cache && Date.now() - cacheTime < CACHE_TTL) {
     return cache
   }
 
   try {
-    const data = await fetchStaticListings()
+    const data = await enrichDescriptionsFromApi(await fetchStaticListings())
     cache = data
     cacheTime = Date.now()
     return data
